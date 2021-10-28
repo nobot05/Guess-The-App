@@ -8,7 +8,7 @@
     tools:context=".MainActivity">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/appImage"
         android:layout_width="160dp"
         android:layout_height="170dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -16,13 +16,12 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.158"
-        tools:srcCompat="@tools:sample/avatars" />
+        app:layout_constraintVertical_bias="0.276" />
 
     <androidx.gridlayout.widget.GridLayout
         android:id="@+id/gridLayout"
         android:layout_width="393dp"
-        android:layout_height="296dp"
+        android:layout_height="250dp"
         app:columnCount="2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -32,44 +31,71 @@
         app:rowCount="2">
 
         <Button
-            android:id="@+id/button2"
-            android:layout_width="184dp"
-            android:layout_height="106dp"
+            android:id="@+id/guess1"
+            android:layout_width="180dp"
+            android:layout_height="110dp"
             android:layout_margin="20px"
             android:backgroundTint="#DC9BDB"
-            android:text="Button"
             app:layout_column="0"
-            app:layout_row="0" />
+            app:layout_row="0"
+            tools:ignore="SpeakableTextPresentCheck" />
 
         <Button
-            android:id="@+id/button3"
-            android:layout_width="184dp"
-            android:layout_height="106dp"
+            android:id="@+id/guess4"
+            android:layout_width="180dp"
+            android:layout_height="110dp"
             android:layout_margin="20px"
             android:backgroundTint="#DC9BDB"
-            android:text="Button"
             app:layout_column="1"
-            app:layout_row="1" />
+            app:layout_row="1"
+            tools:ignore="SpeakableTextPresentCheck" />
 
         <Button
-            android:id="@+id/button4"
-            android:layout_width="184dp"
-            android:layout_height="106dp"
+            android:id="@+id/guess3"
+            android:layout_width="180dp"
+            android:layout_height="110dp"
             android:layout_margin="20px"
             android:backgroundTint="#DC9BDB"
-            android:text="Button"
             app:layout_column="0"
-            app:layout_row="1" />
+            app:layout_row="1"
+            tools:ignore="SpeakableTextPresentCheck" />
 
         <Button
-            android:id="@+id/button5"
-            android:layout_width="184dp"
-            android:layout_height="106dp"
+            android:id="@+id/guess2"
+            android:layout_width="180dp"
+            android:layout_height="110dp"
             android:layout_margin="20px"
             android:backgroundTint="#DC9BDB"
-            android:text="Button"
             app:layout_column="1"
-            app:layout_row="0" />
+            app:layout_row="0"
+            tools:ignore="SpeakableTextPresentCheck" />
+
     </androidx.gridlayout.widget.GridLayout>
+
+    <TextView
+        android:id="@+id/txt_timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="40dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.022" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:text="You have to guess 103 apps!"
+        android:textSize="28sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.49"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.098" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
