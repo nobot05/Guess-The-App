@@ -1,9 +1,10 @@
-package com.lau.group_project;
+package com.nhk.guesstheapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
@@ -11,9 +12,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.lau.group_project.R;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,8 +29,8 @@ public class Level2 extends AppCompatActivity {
     Button option1, option2, option3, option4;
     LinkedList<String> images,names,options;
     int count;
+    int score;
     ImageView image;
-    TextView imgnry_timer;
     String right;
 
     @Override
@@ -41,14 +39,14 @@ public class Level2 extends AppCompatActivity {
         names = new LinkedList<>();
         options = new LinkedList<>();
         count = 0;
+        score = 0;
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_level1);
+        setContentView(R.layout.activity_level2);
 
-        imgnry_timer = (TextView) findViewById(R.id.txt_timer);
         image = (ImageView) findViewById(R.id.appImage);
         option1 = findViewById(R.id.guess1);
         option2 = findViewById(R.id.guess2);
@@ -57,7 +55,8 @@ public class Level2 extends AppCompatActivity {
 
 
         try {
-
+//            DownloadTask dt = new DownloadTask();
+//            String s = download();
             URL google = new URL("https://www.pcmag.com/picks/best-android-apps");
             BufferedReader in = new BufferedReader(new InputStreamReader(google.openStream()));
             String input;
@@ -70,75 +69,15 @@ public class Level2 extends AppCompatActivity {
 
             String s = stringBuffer.toString();
 
-            String regex = "http(s?)://([\\w-]+\\.)+[\\w-]+(/[\\w- ./]*)+\\.(?:[gG][iI][fF]|[jJ][pP][gG]|[jJ][pP][eE][gG]|[pP][nN][gG]|[bB][mM][pP])";
-            Matcher m = Pattern.compile(regex).matcher(s);
-            String fulldata = "";
-            while (m.find()) {
-                String src = m.group();
-                int startIndex = src.indexOf("src=") + 1;
-                String srcTag = src.substring(startIndex, src.length());
-                fulldata+= srcTag+"\n";
-                images.add(srcTag);
-            }
-
-
-            String regex2 = "<h2 class=\"order-last md:order-first font-bold font-brand text-lg md:text-xl leading-normal w-full\">(.*?)</h2>";
-            Matcher m2 = Pattern.compile(regex2).matcher(s);
-            String fulldata2 = "";
-            int count = 0;
-            while(m2.find()){
-                String src = m2.group();
-                int startIndex = src.indexOf(">") + 1;
-                int endIndex = src.indexOf("</h2>");
-                String srcTag = src.substring(startIndex, endIndex);
-                names.add(srcTag);
-            }
+            getImagesFromDownloadedURL(s);
+            getNamesFromDownloadedURL(s);
             rrandomm();
 
-            option1.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(option1.getText().toString().equalsIgnoreCase(right)){
-                        rightAnswer();
-                        rrandomm();
-                    }else{
-                        wrongAnswer();
-                    }
-                }
-            });
-            option2.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(option2.getText().toString().equalsIgnoreCase(right)){
-                        rightAnswer();
-                        rrandomm();
-                    }else{
-                        wrongAnswer();
-                    }
-                }
-            });
-            option3.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(option3.getText().toString().equalsIgnoreCase(right)){
-                        rightAnswer();
-                        rrandomm();
-                    }else{
-                        wrongAnswer();
-                    }
-                }
-            });
-            option4.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(option4.getText().toString().equalsIgnoreCase(right)){
-                        rightAnswer();
-                        rrandomm();
-                    }else{
-                        wrongAnswer();
-                    }
-                }
-            });
+            btnSetOnClickListener(option1);
+            btnSetOnClickListener(option2);
+            btnSetOnClickListener(option3);
+            btnSetOnClickListener(option4);
+
 
         } catch (Exception e) {
             Log.e("Fetching", "Error Fetching https://www.pcmag.com/picks/best-android-apps");
@@ -146,6 +85,54 @@ public class Level2 extends AppCompatActivity {
         }
 
     }
+
+    public void btnSetOnClickListener(Button btn){
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkCorrectAnswer(btn);
+            }
+        });
+    }
+
+    public void checkCorrectAnswer(Button btn){
+        if(btn.getText().toString().equalsIgnoreCase(right)){
+            rightAnswer();
+            rrandomm();
+        }else{
+            wrongAnswer();
+            rrandomm();
+        }
+    }
+
+    public void getImagesFromDownloadedURL(String s){
+        String regex = "\"(https://i.pcmag.com/imagery/(collection-group-product|roundup-products).*?)\"";
+        Matcher m = Pattern.compile(regex).matcher(s);
+        while (m.find()) {
+            String src = m.group(1);
+            images.add(src);
+        }
+    }
+
+    public void getNamesFromDownloadedURL(String s){
+        String regex = "alt=\"(.*?) Image\"";
+        Matcher m = Pattern.compile(regex).matcher(s);
+        int count = 0;
+        while(m.find()){
+            String src = m.group(1);
+            names.add(src);
+            count++;
+            if(count==103)
+                break;
+        }
+    }
+
+    public String download(){
+        return new DownloadTask().doInBackground("https://www.pcmag.com/picks/best-android-apps");
+    }
+
+
+
 
     public static Bitmap getBitmapFromURL(String src) {
         try {
@@ -165,43 +152,84 @@ public class Level2 extends AppCompatActivity {
         }
     }
 
-    public void rrandomm(){
-        if(count==103){
-            imgnry_timer.setText("GameOver");
-            option1.setOnClickListener(null);
-            option2.setOnClickListener(null);
-            option3.setOnClickListener(null);
-            option4.setOnClickListener(null);
-        }
-        count++;
+    public void stopGame(){
+        option1.setOnClickListener(null);
+        option2.setOnClickListener(null);
+        option3.setOnClickListener(null);
+        option4.setOnClickListener(null);
+    }
+
+    public void shuffleOptions(){
         Random rand = new Random();
-        int first = rand.nextInt(names.size())+12;
-        int second = first-12;
-        image.setImageBitmap(getBitmapFromURL(images.get(first)));
-        right = names.get(second);
-        options.add(right);
-        Log.v("all options",options.toString());
-        while(options.size()<4){
-            int N =rand.nextInt(names.size());
-            if(!names.get(N).equalsIgnoreCase(right))
-                options.add(names.get(N));
-            Log.v("all options",options.toString());
-        }
         int n = rand.nextInt(options.size());
         option1.setText(options.remove(n));
         n = rand.nextInt(options.size());
         option2.setText(options.remove(n));
         n = rand.nextInt(options.size());
         option3.setText(options.remove(n));
-        option4.setText(options.remove(0));
+        n = rand.nextInt(options.size());
+        option4.setText(options.remove(n));
+    }
+
+    public void rrandomm(){
+        if(count==103){
+            stopGame();
+        }
+
+        count++;
+        Random rand = new Random();
+        int first = rand.nextInt(names.size());
+        int second = first;
+        image.setImageBitmap(getBitmapFromURL(images.get(first)));
+        right = names.get(second);
+        options.add(right);
+        while(options.size()<4){
+            int N =rand.nextInt(names.size());
+            if(!names.get(N).equalsIgnoreCase(right))
+                options.add(names.get(N));
+        }
+        shuffleOptions();
     }
 
     public void rightAnswer(){
+        score+=2;
         Log.i("correctness", "right app");
     }
     public void wrongAnswer(){
+        score = Math.max(score-1,0);
         Log.i("correctness", "wrong app");
     }
 
+    public class DownloadTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... strings) {
+
+            String result = "";
+
+            URL url;
+            HttpURLConnection urlConnection = null;
+            try{
+                url = new URL(strings[0]);
+                urlConnection = (HttpURLConnection) url.openConnection();
+                InputStream in = urlConnection.getInputStream();
+                InputStreamReader reader = new InputStreamReader(in);
+
+                int data = reader.read();
+                while(data!=-1){
+                    char current = (char) data;
+                    result += current;
+                    data=reader.read();
+                }
+
+                in.close();
+                reader.close();
+                return result;
+            }catch(Exception e){
+                e.printStackTrace();
+                return "Failed";
+            }
+
+        }}
 
 }
